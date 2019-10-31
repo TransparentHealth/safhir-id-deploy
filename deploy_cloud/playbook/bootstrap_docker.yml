@@ -1,0 +1,82 @@
+---
+# Install docker-ce and docker-compose
+
+- hosts: "{{ variable_host | default('all') }}"
+  remote_user: "{{ remote_user_account }}"
+  gather_facts: false
+  vars_files:
+    - "./../vars/{{ cloud_client }}/common.yml"
+    - "./../vault/{{ cloud_client }}/{{ vpc_env }}/vault.yml"
+    - "./../vars/{{ cloud_client }}/{{ vpc_env }}/env.yml"
+
+  tasks:
+
+    - name: apt update
+      raw: sudo apt-get -y update
+
+    - name: install pre-requisites
+      become_user: "{{ remote_admin_account}}"
+      become: yes
+      apt:
+        name: ["apt-transport-https", "ca-certificates", "curl", "software-properties-common"]
+        state: present
+
+    - name: add docker GPG key
+      raw: curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+
+    - name: setup stable repository
+      raw: sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+
+    - name: refresh apt for latest updates
+      raw: sudo apt-get -y update
+
+    - name: install docker CE
+      become_user: "{{ remote_admin_account}}"
+      become: yes
+      apt:
+        name: "docker-ce"
+        state: present
+
+    - name: "add {{ remote_user_account }} user to docker group"
+      become_user: "{{ remote_admin_account}}"
+      become: yes
+      user:
+        name: "{{ remote_user_account }}"
+        groups: docker
+        append: yes
+
+    - name: "refresh {{ remote_user_account }} group memberships without logout"
+      become_user: "{{ remote_admin_account}}"
+      become: yes
+      raw: "gpasswd -a {{ remote_user_account }} docker"
+
+    - name: install docker-compose
+      # raw: sudo apt-get -y install docker-compose
+      raw: sudo curl -L "https://github.com/docker/compose/releases/download/1.24.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+
+    - name: Make executable
+      raw: sudo chmod +x /usr/local/bin/docker-compose
+
+
+    - name: " start docker daemon"
+      raw: "sudo systemctl enable docker"
+
+#      become_user: "{{ remote_admin_account }}"
+#      become: yes
+#      apt:
+#        name: "docker-compose"
+#        state: present
+
+    - name: hello world
+      raw: docker run hello-world
+      register: docker_installed_result
+
+    - name: "Check Docker and Docker-Compose versions"
+      raw: "docker version; docker-compose version"
+      register: docker_version_installed
+
+    - debug:
+        msg: "{{ docker_version_installed.stdout }}"
+
+    - debug:
+        msg: "{{ docker_installed_result.stdout }}"

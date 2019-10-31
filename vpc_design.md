@@ -1,4 +1,4 @@
-# VPC Design
+# AWS VPC Design
 
 PRODUCTION: 10.10.x.x
 STAGING: 10.20.x.x

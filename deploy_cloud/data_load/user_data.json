@@ -1,0 +1,83 @@
+[
+{
+  "model": "auth.user",
+  "pk": 1,
+  "fields": {
+    "password": "pbkdf2_sha256$150000$8Y53ZWaVTVjW$PW4HFhwnv94ffMP6ZEAWK+0OmxY0mto2Kg8WYUSmBmQ=",
+    "last_login": "2019-10-24T17:42:51.080Z",
+    "is_superuser": true,
+    "username": "pyapps",
+    "first_name": "MONTY",
+    "last_name": "PYTHON",
+    "email": "sales@videntity.com",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2019-10-17T15:19:30Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 2,
+  "fields": {
+    "password": "pbkdf2_sha256$150000$C9pELSo8wpso$Gf/gGaGhb6esVpjgBgpEQ9JFpt1fAP6fEtX8VbwdDXU=",
+    "last_login": "2019-10-17T17:22:41.314Z",
+    "is_superuser": false,
+    "username": "leaan",
+    "first_name": "LEAAN",
+    "last_name": "BALLONI",
+    "email": "leaan@videntity.com",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2019-10-17T16:16:38.799Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 3,
+  "fields": {
+    "password": "pbkdf2_sha256$150000$WyfSlI9XnCnb$rWd1QxtQm4hRWErwHrN0ns9QDqfcr5PPGN5jTYyvdfc=",
+    "last_login": "2019-10-25T16:14:01.689Z",
+    "is_superuser": false,
+    "username": "aviars",
+    "first_name": "ALAN",
+    "last_name": "VIARS",
+    "email": "alan@transparenthealth.org",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2019-10-18T13:06:51.560Z",
+    "groups": [
+      4,
+      5
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 5,
+  "fields": {
+    "password": "pbkdf2_sha256$150000$hz0z4n1kHd4B$FvnkkyVlqFyJEeIHavzXbrguSc/kn306NvmjJMEdBjk=",
+    "last_login": "2019-10-21T17:15:12Z",
+    "is_superuser": false,
+    "username": "manasi",
+    "first_name": "MANASI",
+    "last_name": "DUTTA",
+    "email": "manasi.dutta@abhealth.us",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2019-10-21T17:00:17Z",
+    "groups": [
+      3,
+      4,
+      5,
+      6
+    ],
+    "user_permissions": []
+  }
+}
+]
+

@@ -1,0 +1,11 @@
+#---
+# azure.inventory
+# Copy to ./etc/ansible/hosts on first install
+
+localhost ansible_connection=local
+
+[vmi]
+id_server ansible_host=:52.224.178.3 ansible_user=ubuntu
+52.224.178.3
+id.dev.safhir.io ansible_host=52.224.178.3 ansible_user=ubuntu
+

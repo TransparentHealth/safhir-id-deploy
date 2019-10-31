@@ -1,0 +1,448 @@
+---
+# var/{{ cloud_client }}/common.yml
+# cloud_client = "safhir"
+# Store variables that are common across all environments
+
+# Debug Mode: FALSE in PROD, TRUE in STAGING
+django_debug: "{{ env_django_debug }}"
+django_secret_key: "{{ env_django_secret_key }}"
+
+use_parameter_store: "{{ env_use_parameter_store }}"
+# use_parameter_store: "FALSE"
+# environment_variable_strategy: ".env"
+environment_variable_strategy: "{{ env_environment_variable_strategy }}"
+# ".env" | "EC2_PARAMSTORE"
+ec2paramstore_4_env_vars: "{{ env_ec2paramstore_4_env_vars }}"
+
+cloud_provider: "azure"
+# Options: aws | azure
+
+system_descriptive_name:
+  vmi: "Verify My Identity"
+  smh: "SAFHIR: Share My Health"
+  smh_app: "SAFHIR: Health Apps"
+
+system_repository_name:
+  vmi: "vmi"
+  smh: "sharemyhealth"
+  smh_app: "smh_app"
+
+
+ansible_ssh_private_key_file: "{{ env_ansible_ssh_private_key_file }}"
+ansible_ssh_private_key_name: "{{ env_ansible_ssh_private_key_name }}"
+
+system_full_name: {"vmi": "verifymyidentity", "smh": "sharemyhealth", "smh_app": "sharemyhealthapp"}
+
+dns_app_name: "{{ env_dns_app_name }}"
+
+deployment_server_name: "abhealth_deploy_server_{{ vpc_env }}"
+
+# ubuntu 18.04 with Python3.6
+# base_ami: "ami-07d0cf3af28718ef8"
+# ubuntu 16.04 with Python3.5
+# base_ami: "ami-0cfee17793b08a293"
+base_ami: "{{ env_base_ami }}"
+
+python_version: "{{ env_python_version }}"
+# http or https
+http_mode: "{{ env_http_mode }}"
+
+# base_instance_elastic_ip: "3.227.187.144"
+base_instance_elastic_ip: "34.229.8.6"
+
+aws_access_key: "{{ env_aws_access_key }}"
+aws_secret_key: "{{ env_aws_secret_key }}"
+
+remote_user_account: "{{ env_remote_user_account }}"
+remote_admin_account: "{{ env_remote_admin_account }}"
+
+# This is the directory that the apps are cloned into
+# each app will be in a different sub0directory under this base directory
+base_app_directory: "{{ env_base_app_directory }}"
+
+# create a virtual environment directory in the env directory of the app.
+# eg. if vmi is installed to /pyapps/vmi the env dir for the virtual env is in /pyapps/vmi/env
+virtual_env_dir: "env"
+
+# pip install extra arguments needed:
+# when FIPS-140.2 is enabled MD5 checksums are not supported.
+# This causes pip to fail.
+# check file: /proc/sys/crypto/fips_enabled
+# 1 = Enabled | 0 = disabled
+# If enabled we need to pass -i https://pypi.org/simple/ to extra_args
+# in ansible pip command
+# pip_extra_args: " -i https://pypi.org/simple/ "
+pip_extra_args: ""
+
+app_owner: "{{ app_pyapps_user }}"
+# application group: nginx
+app_group: "www-data"
+
+# Python information
+# Version - ubuntu installs Python3.6 by default
+python_ver: "3.6"
+python_bin_dir: "/usr/bin"
+
+#RDS DB_NAME
+rds_db_name: "{{ env_rds_db_name }}"
+
+# RDS Username
+rds_username: "{{ env_rds_username }}"
+rds_username_at: "{{ env_rds_username_at }}"
+
+
+db_master_pw: "{{ env_db_master_pw }}"
+
+# nginx settings
+allowed_ips: "{{ env_allowed_ips }}"
+
+# django settings
+# set a variable entrypoint for the admin console.
+# confuses scanners looking for known endpoints
+
+django_admin_redirector: "private/"
+
+git_branch: "{{ env_git_branch }}"
+
+rds_endpoint: "{{ env_rds_endpoint }}"
+rds_port: "{{ env_rds_port }}"
+
+vpc_app_subnet_id: "{{ env_vpc_app_subnet_id }}"
+
+# app_security_group_id: "{{ env_app_security_group_id }}"
+
+ext_nginx_server_names: "{{ common_ext_nginx_server_names[vpc_env] }}"
+
+### Deployment
+
+target_group_name: "{{ env_target_group_name }}"
+vpc_id: "{{ env_vpc_id }}"
+
+alb_name: "{{ env_alb_name }}"
+alb_subnets: "{{ env_alb_subnets }}"
+
+ssl_cert_arn: "{{ env_ssl_cert_arn }}"
+
+lc_name: "{{ env_lc_name }}"
+
+asg_name: "{{ env_asg_name }}"
+
+asg_min_size: "{{ env_asg_min_size }}"
+asg_max_size: "{{ env_asg_max_size }}"
+asg_wait_timeout: "300"
+asg_health_check_period: "300"
+
+
+availability_zones: "{{ env_availability_zones }}"
+alb_ssl_policy_name: "ELBSecurityPolicy-2016-08"
+
+# Notifications
+slack_token_update_channel: "{{ env_slack_token_update_channel }}"
+
+# Imported from vpc_ansibled.yml
+
+# IP CIDR BLOCK Mapping
+# vpc_base_region: us-east
+# vpc_number: 1 | 2
+# env: scratch | dev | stage | prod
+# NOTE: Last period is required in string. Used to connect into Valid subnet string
+vpc_env_block:
+  us-east-1-scratch: "10.11."
+  us-east-1-dev: "10.12."
+  us-east-1-staging: "10.13."
+  us-east-1-prod: "10.14."
+  us-east-2-scratch: "10.1."
+  us-east-2-dev: "10.2."
+  us-east-2-staging: "10.0."
+  us-east-2-prod: "10.3."
+
+# IP CIDR block for the VPC
+vpc_cidr_block: "{{ vpc_env_block[vpc_env_block_prefix] }}0.0/16"
+
+# a map defining the subnets we will build in the VPC
+vpc_subnets:
+  dmz-a:
+    cidr: "{{ vpc_env_block[vpc_env_block_prefix] }}1.0/24"
+    az: "{{ aws_region }}a"
+  dmz-b:
+    cidr: "{{ vpc_env_block[vpc_env_block_prefix] }}2.0/24"
+    az: "{{ aws_region }}b"
+  dmz-c:
+    cidr: "{{ vpc_env_block[vpc_env_block_prefix] }}3.0/24"
+    az: "{{ aws_region }}c"
+  app-a:
+    cidr: "{{ vpc_env_block[vpc_env_block_prefix] }}4.0/24"
+    az: "{{ aws_region }}a"
+  app-b:
+    cidr: "{{ vpc_env_block[vpc_env_block_prefix] }}5.0/24"
+    az: "{{ aws_region }}b"
+  app-c:
+    cidr: "{{ vpc_env_block[vpc_env_block_prefix] }}6.0/24"
+    az: "{{ aws_region }}c"
+  dbs-a:
+    cidr: "{{ vpc_env_block[vpc_env_block_prefix] }}7.0/24"
+    az: "{{ aws_region }}a"
+  dbs-b:
+    cidr: "{{ vpc_env_block[vpc_env_block_prefix] }}8.0/24"
+    az: "{{ aws_region }}b"
+  dbs-c:
+    cidr: "{{ vpc_env_block[vpc_env_block_prefix] }}9.0/24"
+    az: "{{ aws_region }}c"
+  ctl-a:
+    cidr: "{{ vpc_env_block[vpc_env_block_prefix] }}10.0/24"
+    az: "{{ aws_region }}a"
+  ctl-b:
+    cidr: "{{ vpc_env_block[vpc_env_block_prefix] }}11.0/24"
+    az: "{{ aws_region }}b"
+  ctl-c:
+    cidr: "{{ vpc_env_block[vpc_env_block_prefix] }}12.0/24"
+    az: "{{ aws_region }}c"
+
+
+
+# a list defining the security groups for our VPC
+#
+# vpc_env: prod | staging
+#
+#
+#
+vpc_security_groups:
+  - name: "{{ vpc_env }}-DMZ"
+    description: "Public Access to DMZ"
+    rules:
+      - proto: tcp
+        cidr_ip: 0.0.0.0/0
+        ports:
+          - 80
+        rule_desc: "allow web traffic"
+      - proto: tcp
+        cidr_ip: 0.0.0.0/0
+        ports:
+          - 443
+        rule_desc: "allow secure web traffic"
+      - proto: tcp
+        cidr_ip: 0.0.0.0/0
+        ports:
+          - 22
+        rule_desc: "allow SSH Access"
+    rules_egress:
+      - proto: all
+        cidr_ip: 0.0.0.0/0
+        rule_desc: "allow all outbound traffic"
+  - name: "{{ vpc_env }}-vmi-APP"
+    description: "Access to APP for vmi zone"
+    rules:
+      - proto: tcp
+        ports:
+          - 80
+          - 443
+        cidr_ip: "{{ vpc_subnets['dmz-a']['cidr'] }}"
+        rule_desc: "Web Traffic for vmi from dmz-a"
+      - proto: tcp
+        ports:
+          - 80
+          - 443
+        cidr_ip: "{{ vpc_subnets['dmz-b']['cidr'] }}"
+        rule_desc: "Web Traffic for vmi from dmz-b"
+      - proto: tcp
+        ports:
+          - 80
+          - 443
+        cidr_ip: "{{ vpc_subnets['dmz-c']['cidr'] }}"
+        rule_desc: "Web Traffic for vmi from dmz-c"
+      - proto: tcp
+        ports:
+          - 22
+        cidr_ip: "{{ vpc_subnets['dmz-a']['cidr'] }}"
+        rule_desc: "ssh Traffic for vmi from dmz-a"
+      - proto: tcp
+        ports:
+          - 22
+        cidr_ip: "{{ vpc_subnets['dmz-b']['cidr'] }}"
+        rule_desc: "ssh Traffic for vmi from dmz-b"
+      - proto: tcp
+        ports:
+          - 22
+        cidr_ip: "{{ vpc_subnets['dmz-c']['cidr'] }}"
+        rule_desc: "ssh Traffic for vmi from dmz-c"
+
+  - name: "{{ vpc_env }}-smh-APP"
+    description: "Access to APP for smh zone"
+    rules:
+      - proto: tcp
+        ports:
+          - 80
+          - 443
+        cidr_ip: "{{ vpc_subnets['dmz-a']['cidr'] }}"
+        rule_desc: "Web Traffic for smh from dmz-a"
+      - proto: tcp
+        ports:
+          - 80
+          - 443
+        cidr_ip: "{{ vpc_subnets['dmz-b']['cidr'] }}"
+        rule_desc: "Web Traffic for smh from dmz-b"
+      - proto: tcp
+        ports:
+          - 80
+          - 443
+        cidr_ip: "{{ vpc_subnets['dmz-c']['cidr'] }}"
+        rule_desc: "Web Traffic for smh from dmz-c"
+      - proto: tcp
+        ports:
+          - 22
+        cidr_ip: "{{ vpc_subnets['dmz-a']['cidr'] }}"
+        rule_desc: "ssh Traffic for smh from dmz-a"
+      - proto: tcp
+        ports:
+          - 22
+        cidr_ip: "{{ vpc_subnets['dmz-b']['cidr'] }}"
+        rule_desc: "ssh Traffic for smh from dmz-b"
+      - proto: tcp
+        ports:
+          - 22
+        cidr_ip: "{{ vpc_subnets['dmz-c']['cidr'] }}"
+        rule_desc: "ssh Traffic for smh from dmz-c"
+
+  - name: "{{ vpc_env }}-smhapp-APP"
+    description: "Access to APP for smhapp zone"
+    rules:
+      - proto: tcp
+        ports:
+          - 80
+          - 443
+        cidr_ip: "{{ vpc_subnets['dmz-a']['cidr'] }}"
+        rule_desc: "Web Traffic for smhapp from dmz-a"
+      - proto: tcp
+        ports:
+          - 80
+          - 443
+        cidr_ip: "{{ vpc_subnets['dmz-b']['cidr'] }}"
+        rule_desc: "Web Traffic for smhapp from dmz-b"
+      - proto: tcp
+        ports:
+          - 80
+          - 443
+        cidr_ip: "{{ vpc_subnets['dmz-c']['cidr'] }}"
+        rule_desc: "Web Traffic for smhapp from dmz-c"
+      - proto: tcp
+        ports:
+          - 22
+        cidr_ip: "{{ vpc_subnets['dmz-a']['cidr'] }}"
+        rule_desc: "ssh Traffic for smhapp from dmz-a"
+      - proto: tcp
+        ports:
+          - 22
+        cidr_ip: "{{ vpc_subnets['dmz-b']['cidr'] }}"
+        rule_desc: "ssh Traffic for smh from dmz-b"
+      - proto: tcp
+        ports:
+          - 22
+        cidr_ip: "{{ vpc_subnets['dmz-c']['cidr'] }}"
+        rule_desc: "ssh Traffic for smhapp from dmz-c"
+
+
+  - name: "{{ vpc_env }}-DBS"
+    description: "Access to DBS zone"
+    rules:
+      - proto: tcp
+        ports:
+          - 5432
+        cidr_ip: "{{ vpc_subnets['app-a']['cidr'] }}"
+        rule_desc: "Postgres Traffic from app-a"
+      - proto: tcp
+        ports:
+          - 5432
+        cidr_ip: "{{ vpc_subnets['app-b']['cidr'] }}"
+        rule_desc: "Postgres Traffic from app-b"
+      - proto: tcp
+        ports:
+          - 5432
+        cidr_ip: "{{ vpc_subnets['app-c']['cidr'] }}"
+        rule_desc: "Web Traffic from app-c"
+      - proto: tcp
+        ports:
+          - 22
+        cidr_ip: "{{ vpc_subnets['dmz-a']['cidr'] }}"
+        rule_desc: "ssh Traffic from dmz-a"
+      - proto: tcp
+        ports:
+          - 22
+        cidr_ip: "{{ vpc_subnets['dmz-b']['cidr'] }}"
+        rule_desc: "ssh Traffic from dmz-b"
+      - proto: tcp
+        ports:
+          - 22
+        cidr_ip: "{{ vpc_subnets['dmz-c']['cidr'] }}"
+        rule_desc: "ssh Traffic from dmz-c"
+
+
+app_primary_zone:
+  vmi: "a"
+  smh: "b"
+  smh_app: "c"
+
+# vpc ids:
+# ABH-prod-A: vpc-04034ff7143fb9d51
+# ABH-staging-A: vpc-05253e87f7c98a659
+# ABH-dev-A: vpc-0da9583f8b8df681e
+
+vpc_id_name:
+  dev: "ABH-dev-A"
+  staging: "ABH-staging-A"
+  prod: "ABH-prod-A"
+
+vpc_id_ref:
+  dev: "vpc-0da9583f8b8df681e"
+  staging: "vpc-05253e87f7c98a659"
+  prod: "vpc-04034ff7143fb9d51"
+
+
+# DEV-app-a: subnet-068a792b48a3a04ae
+# DEV-app-b: subnet-0a3676ccba353ebd1
+# DEV-app-c: subnet-090899c2cc10ae855
+# STAGING-app-a: subnet-0f3e62ed785a43596
+# STAGING-app-b: subnet-01115adb629045855
+# STAGING-app-c: subnet-016d7e6c98f8eb48e
+# PROD-app-a: subnet-0b4476f5dcbe627b8
+# PROD-app-b: subnet-037bcc0e86562e2cd
+# PROD-app-c: subnet-0448512ba47acf397
+app_subnet_id:
+  dev:
+    a: "subnet-068a792b48a3a04ae"
+    b: "subnet-0a3676ccba353ebd1"
+    c: "subnet-090899c2cc10ae855"
+  staging:
+    a: "subnet-0f3e62ed785a43596"
+    b: "subnet-01115adb629045855"
+    c: "subnet-016d7e6c98f8eb48e"
+  prod:
+    a: "subnet-0b4476f5dcbe627b8"
+    b: "subnet-037bcc0e86562e2cd"
+    c: "subnet-0448512ba47acf397"
+
+# Security Groups:
+# dev_vmi_APP: sg-021a6be0790fe616c
+# dev_vmi_smh_APP: sg-051a766b5e26e88a4
+# dev_smhapp_APP: sg-0b7f7277479d1aa80
+# staging_vmi_APP: sg-07e837a18a5455edc
+# staging_smh_APP: sg-091fdd0a61462e424
+# staging_smhapp_APP": sg-0067056400347db8e
+# prod_vmi_APP: sg-06e76cadf810014c6
+# prod_smh_APP: sg-05c463ee4001bba68
+# prod_smhapp_APP: sg-0ea107f6d95844cb5
+app_security_group_id:
+  dev: {"vmi": "sg-021a6be0790fe616c", "smh": "sg-051a766b5e26e88a4", "smh_app": "sg-0b7f7277479d1aa80"}
+  staging: {"vmi": "sg-07e837a18a5455edc", "smh": "sg-091fdd0a61462e424", "smh_app": "sg-0067056400347db8e"}
+  prod: {"vmi": "sg-06e76cadf810014c6", "smh": "sg-05c463ee4001bba68", "smh_app": "sg-0ea107f6d95844cb5"}
+
+app_security_group_name:
+  dev: {"vmi": "dev_vmi_APP", "smh": "dev_smh_APP", "smh_app": "dev_smhapp_APP"}
+  staging: {"vmi": "staging_vmi_APP", "smh": "staging_smh_APP", "smh_app": "staging_smhapp_APP"}
+  prod: {"vmi": "prod_vmi_APP", "smh": "prod_smh_APP", "smh_app": "prod_smhapp_APP"}
+
+# NGINX Names
+
+common_ext_nginx_server_names:
+  dev: {"vmi": "id.{{ vpc_env }}.sharemy.health vmi.{{ vpc_env }}.sharemy.health {{ vpc_env }}.sharemy.health", "smh": "smh.{{ vpc_env }}.sharemy.health sharemyhealth.{{ vpc_env }}.sharemy.health {{ vpc_env }}.sharemy.health", "smh_app": "smh_app.{{ vpc_env }}.sharemy.health app.{{ vpc_env }}.sharemy.health {{ vpc_env }}.sharemy.health" }
+  staging: {"vmi": "id.{{ vpc_env }}.sharemy.health vmi.{{ vpc_env }}.sharemy.health {{ vpc_env }}.sharemy.health", "smh": "smh.{{ vpc_env }}.sharemy.health sharemyhealth.{{ vpc_env }}.sharemy.health {{ vpc_env }}.sharemy.health", "smh_app": "smh_app.{{ vpc_env }}.sharemy.health app.{{ vpc_env }}.sharemy.health {{ vpc_env }}.sharemy.health" }
+  prod: {"vmi": "id.sharemy.health vmi.sharemy.health sharemy.health", "smh": "smh.sharemy.health sharemyhealth.sharemy.health sharemy.health", "smh_app": "smh_app.sharemy.health app.sharemy.health sharemy.health" }

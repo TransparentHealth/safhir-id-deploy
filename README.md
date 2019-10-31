@@ -1,10 +1,17 @@
-# Consumer Directed Exchange (CDEx)
+# Consumer Directed Exchange (CDEx) / SAFHIR ID
 
 The Alliance for Better Health Consumer Directed Exchange (CDEx) 
 platform is designed to enable consumers to access their health 
 information from multiple sources and to then share that information 
 with the Community-Based Organizations (CBOs) and other services 
 that they choose to trust.
+
+The ID platform from the Alliance For Better Health's ShareMyHealth 
+implementation is an OpenID Connect compliant server. It is being 
+deployed in the NewWave SAFHIR FHIR Environment as an Identity Service
+for testing purposes. The Verify My Identity (VMI) Server will be 
+installed in the Microsoft Azure cloud.
+
 
 The CDEx platform consists of multiple loosely coupled components:
 
