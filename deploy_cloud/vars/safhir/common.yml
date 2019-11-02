@@ -7,6 +7,11 @@
 django_debug: "{{ env_django_debug }}"
 django_secret_key: "{{ env_django_secret_key }}"
 
+django_organization_title: "{{ env_django_organization_title }}"
+django_organization_uri: "{{ env_django_organization_uri }}"
+
+django_org_signup_contact: "https://newwave.io/safhir/"
+
 use_parameter_store: "{{ env_use_parameter_store }}"
 # use_parameter_store: "FALSE"
 # environment_variable_strategy: ".env"

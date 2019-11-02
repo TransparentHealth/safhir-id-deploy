@@ -1,0 +1,14 @@
+{
+  "model": "accounts.individualidentifier",
+  "pk": 1,
+  "fields": {
+    "user": 2,
+    "type": "PATIENT_ID_FHIR",
+    "name": "SAFHIR_HEALTH_PLAN_MEMBER_23145",
+    "country": "US",
+    "subdivision": "MD",
+    "value": "Patient/23145",
+    "uri": "https://sandbox.bluebutton.cms.gov/v1/fhir/patient/23145",
+    "metadata": ""
+  }
+}

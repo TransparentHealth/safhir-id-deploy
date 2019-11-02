@@ -1,0 +1,20 @@
+{
+  "model": "auth.user",
+  "pk": 4,
+  "fields": {
+    "password": "pbkdf2_sha256$150000$Jhq1u4oS7z3O$UZ8H4WItqwTb7gqqGf+pvhlCVy/IIsYHJWwfOmbjv0U=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "safhirUser100001",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2019-11-01T01:53:40Z",
+    "groups": [
+      1
+    ],
+    "user_permissions": []
+  }
+}
