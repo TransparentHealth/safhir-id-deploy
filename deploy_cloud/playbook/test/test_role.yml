@@ -35,5 +35,5 @@
   roles:
 #    - role: "../../roles/notify_slack"
 #    - role: "../../roles/notify_team"
+    - role: "../../roles/azure/create_blob_container"
 
-    - role: ""

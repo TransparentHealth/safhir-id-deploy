@@ -1,13 +1,10 @@
 ---
-# notify_teams/tasks/main.yml
+# notify/team/tasks/main.yml
 # Created: 2019-09-21
 # cdex-deploy
-# Purpose: Send notifcation to Teams BB2,0/alliance channel
+# Purpose: Send notification to Teams BB2.0/alliance channel
 #
 #    
-
-- debug:
-    msg: "testing teams notification"
 
 - name: Send Teams notification
   office_365_connector_card:

@@ -1,0 +1,22 @@
+---
+# roles/azure/create_blob_container/tasks/main.yml
+# Created: 2019-11-07
+# safhir-id-deploy
+# Purpose: Create azure blob storage
+#
+#    
+#    
+
+- name: Create Azure Blob containers
+  azure_rm_storageblob:
+    auth_source: credential_file
+    resource_group: "{{ azure_resource_group }}"
+    storage_account_name: "{{ cloud_client|lower }}{{ vpc_env|lower }}{{ role_type|lower }}"
+    container: "{{ item.name }}"
+    public_access: "{{ item.access_level }}"
+    state: present
+  with_items:
+    - { name: "static", access_level: "container" }
+    - { name: "media", access_level: "container" }
+
+

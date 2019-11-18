@@ -3,6 +3,27 @@
 # cloud_client = "safhir"
 # Store variables that are common across all environments
 
+
+###########################################
+# CLOUD PROVIDER Settings
+###########################################
+cloud_provider: "azure"
+# Options: aws | azure
+
+###########################################
+# CUSTOMER Settings
+###########################################
+cloud_client: "safhir"
+azure_resource_group: "Dev-NW-SAFHIR"
+
+###########################################
+# DJANGO Settings
+###########################################
+# set a variable entrypoint for the admin console.
+# confuses scanners looking for known endpoints
+
+django_admin_redirector: "private/"
+
 # Debug Mode: FALSE in PROD, TRUE in STAGING
 django_debug: "{{ env_django_debug }}"
 django_secret_key: "{{ env_django_secret_key }}"
@@ -19,8 +40,7 @@ environment_variable_strategy: "{{ env_environment_variable_strategy }}"
 # ".env" | "EC2_PARAMSTORE"
 ec2paramstore_4_env_vars: "{{ env_ec2paramstore_4_env_vars }}"
 
-cloud_provider: "azure"
-# Options: aws | azure
+django_cloud_provider: "{{ cloud_provider }}"
 
 system_descriptive_name:
   vmi: "Verify My Identity"
@@ -88,6 +108,34 @@ app_group: "www-data"
 python_ver: "3.6"
 python_bin_dir: "/usr/bin"
 
+git_branch: "{{ env_git_branch }}"
+
+###########################################
+# NGINX Settings
+###########################################
+
+# nginx settings
+allowed_ips: "{{ env_allowed_ips }}"
+
+# NGINX Names
+common_ext_nginx_server_names:
+  dev: {"vmi": "id-{{ vpc_env }}.safhir.io vmi-{{ vpc_env }}.safhit.io {{ vpc_env }}.safhir.io", "smh": "smh-{{ vpc_env }}.safhir.io sharemyhealth-{{ vpc_env }}.safhir.io {{ vpc_env }}.safhir.io", "smh_app": "smh_app-{{ vpc_env }}.safhir.io app-{{ vpc_env }}.safhir.io {{ vpc_env }}.safhir.io" }
+  staging: {"vmi": "id-{{ vpc_env }}.safhir.io vmi-{{ vpc_env }}.safhit.io {{ vpc_env }}.safhir.io", "smh": "smh-{{ vpc_env }}.safhir.io sharemyhealth-{{ vpc_env }}.safhir.io {{ vpc_env }}.safhir.io", "smh_app": "smh_app-{{ vpc_env }}.safhir.io app-{{ vpc_env }}.safhir.io {{ vpc_env }}.safhir.io" }
+  prod: {"vmi": "id.safhir.io vmi.safhir.io", "smh": "smh.safhir.io sharemyhealth.safhir.io safhir.io", "smh_app": "smh_app.safhir.io app.safhir.io safhir.io" }
+
+ext_nginx_server_names: "{{ common_ext_nginx_server_names[vpc_env] }}"
+
+###########################################
+# NOTIFICATION Settings
+###########################################
+# Slack Notifications
+slack_token_update_channel: "{{ env_slack_token_update_channel }}"
+
+
+###########################################
+# AWS Settings
+###########################################
+
 #RDS DB_NAME
 rds_db_name: "{{ env_rds_db_name }}"
 
@@ -95,19 +143,7 @@ rds_db_name: "{{ env_rds_db_name }}"
 rds_username: "{{ env_rds_username }}"
 rds_username_at: "{{ env_rds_username_at }}"
 
-
 db_master_pw: "{{ env_db_master_pw }}"
-
-# nginx settings
-allowed_ips: "{{ env_allowed_ips }}"
-
-# django settings
-# set a variable entrypoint for the admin console.
-# confuses scanners looking for known endpoints
-
-django_admin_redirector: "private/"
-
-git_branch: "{{ env_git_branch }}"
 
 rds_endpoint: "{{ env_rds_endpoint }}"
 rds_port: "{{ env_rds_port }}"
@@ -115,8 +151,6 @@ rds_port: "{{ env_rds_port }}"
 vpc_app_subnet_id: "{{ env_vpc_app_subnet_id }}"
 
 # app_security_group_id: "{{ env_app_security_group_id }}"
-
-ext_nginx_server_names: "{{ common_ext_nginx_server_names[vpc_env] }}"
 
 ### Deployment
 
@@ -141,8 +175,6 @@ asg_health_check_period: "300"
 availability_zones: "{{ env_availability_zones }}"
 alb_ssl_policy_name: "ELBSecurityPolicy-2016-08"
 
-# Notifications
-slack_token_update_channel: "{{ env_slack_token_update_channel }}"
 
 # Imported from vpc_ansibled.yml
 
@@ -345,6 +377,43 @@ vpc_security_groups:
         cidr_ip: "{{ vpc_subnets['dmz-c']['cidr'] }}"
         rule_desc: "ssh Traffic for smhapp from dmz-c"
 
+  - name: "{{ vpc_env }}-cda-APP"
+    description: "Access to APP for cda zone"
+    rules:
+      - proto: tcp
+        ports:
+          - 80
+          - 443
+        cidr_ip: "{{ vpc_subnets['dmz-a']['cidr'] }}"
+        rule_desc: "Web Traffic for smhapp from dmz-a"
+      - proto: tcp
+        ports:
+          - 80
+          - 443
+        cidr_ip: "{{ vpc_subnets['dmz-b']['cidr'] }}"
+        rule_desc: "Web Traffic for smhapp from dmz-b"
+      - proto: tcp
+        ports:
+          - 80
+          - 443
+        cidr_ip: "{{ vpc_subnets['dmz-c']['cidr'] }}"
+        rule_desc: "Web Traffic for smhapp from dmz-c"
+      - proto: tcp
+        ports:
+          - 22
+        cidr_ip: "{{ vpc_subnets['dmz-a']['cidr'] }}"
+        rule_desc: "ssh Traffic for smhapp from dmz-a"
+      - proto: tcp
+        ports:
+          - 22
+        cidr_ip: "{{ vpc_subnets['dmz-b']['cidr'] }}"
+        rule_desc: "ssh Traffic for smh from dmz-b"
+      - proto: tcp
+        ports:
+          - 22
+        cidr_ip: "{{ vpc_subnets['dmz-c']['cidr'] }}"
+        rule_desc: "ssh Traffic for smhapp from dmz-c"
+
 
   - name: "{{ vpc_env }}-DBS"
     description: "Access to DBS zone"
@@ -385,6 +454,7 @@ app_primary_zone:
   vmi: "a"
   smh: "b"
   smh_app: "c"
+  cda: "b"
 
 # vpc ids:
 # ABH-prod-A: vpc-04034ff7143fb9d51
@@ -445,9 +515,3 @@ app_security_group_name:
   staging: {"vmi": "staging_vmi_APP", "smh": "staging_smh_APP", "smh_app": "staging_smhapp_APP"}
   prod: {"vmi": "prod_vmi_APP", "smh": "prod_smh_APP", "smh_app": "prod_smhapp_APP"}
 
-# NGINX Names
-
-common_ext_nginx_server_names:
-  dev: {"vmi": "id.{{ vpc_env }}.sharemy.health vmi.{{ vpc_env }}.sharemy.health {{ vpc_env }}.sharemy.health", "smh": "smh.{{ vpc_env }}.sharemy.health sharemyhealth.{{ vpc_env }}.sharemy.health {{ vpc_env }}.sharemy.health", "smh_app": "smh_app.{{ vpc_env }}.sharemy.health app.{{ vpc_env }}.sharemy.health {{ vpc_env }}.sharemy.health" }
-  staging: {"vmi": "id.{{ vpc_env }}.sharemy.health vmi.{{ vpc_env }}.sharemy.health {{ vpc_env }}.sharemy.health", "smh": "smh.{{ vpc_env }}.sharemy.health sharemyhealth.{{ vpc_env }}.sharemy.health {{ vpc_env }}.sharemy.health", "smh_app": "smh_app.{{ vpc_env }}.sharemy.health app.{{ vpc_env }}.sharemy.health {{ vpc_env }}.sharemy.health" }
-  prod: {"vmi": "id.sharemy.health vmi.sharemy.health sharemy.health", "smh": "smh.sharemy.health sharemyhealth.sharemy.health sharemy.health", "smh_app": "smh_app.sharemy.health app.sharemy.health sharemy.health" }
