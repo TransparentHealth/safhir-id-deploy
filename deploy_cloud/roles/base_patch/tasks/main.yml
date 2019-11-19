@@ -44,6 +44,7 @@
         #    - pcre-dev
         #    - postgresql-dev
         #    - musl-dev
+        - python-ldap
         - libldap2-dev
         - libxml2-dev
         - libxslt-dev
