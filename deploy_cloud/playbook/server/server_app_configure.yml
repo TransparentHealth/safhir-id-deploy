@@ -54,6 +54,6 @@
     - role: "../../roles/nginx"
     - role: "../../roles/check_web_is_up"
 
-    - role: "../../roles/notify/slack"
+    # - role: "../../roles/notify/slack"
     - role: "../../roles/notify/team"
 

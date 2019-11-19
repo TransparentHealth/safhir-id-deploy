@@ -125,12 +125,14 @@ common_ext_nginx_server_names:
 
 ext_nginx_server_names: "{{ common_ext_nginx_server_names[vpc_env] }}"
 
-###########################################
-# NOTIFICATION Settings
-###########################################
-# Slack Notifications
+#################################
+# Notification Settings
+#################################
+# Notifications - Slack
 slack_token_update_channel: "{{ env_slack_token_update_channel }}"
-
+# Notifications - Teams
+# Teams / office_365_connector_card webhook:
+teams_webhook: "{{ env_teams_webhook }}"
 
 ###########################################
 # AWS Settings
