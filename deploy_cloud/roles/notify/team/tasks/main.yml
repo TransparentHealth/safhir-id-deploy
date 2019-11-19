@@ -9,4 +9,4 @@
 - name: Send Teams notification
   office_365_connector_card:
     webhook: "{{ teams_webhook }}"
-    text: "{{ cloud_client|upper }}{{ role_type }} updated in {{ vpc_env }} at {{ configure_time }} from https://github.com/TransparentHealth/{{ system_repository_name[role_type] }} Branch: {{ git_branch[role_type] }}"
+    text: "{{ cloud_client|upper }}:{{ role_type }} updated in {{ vpc_env }} at {{ configure_time }} from https://github.com/TransparentHealth/{{ system_repository_name[role_type] }} Branch: {{ git_branch[role_type] }}"
