@@ -1,0 +1,38 @@
+---
+# roles/app/add_management_commands/tasks/main.yml
+# Created: 2019-11-20
+# safhir-id-deploy
+# Purpose:
+#   install management command
+#
+
+- name: Copy create_sample_vmi_users to accounts/management/commands
+  copy:
+    src: "files/create_sample_vmi_users.py"
+    dest: "/opt/django-projects/vmi/apps/accounts/management/commands/create_sample_vmi_users.py"
+    owner: "{{ remote_user }}"
+    group: "{{ remote_user }}"
+    mode: "0644"
+
+- name: install azure cli
+  become_user: "{{ remote_admin_user }}"
+  become: yes
+  apt:
+    name:
+      - apt-transport-https
+      - lsb-release
+      - gnupg
+      - curl
+      - azure-cli
+
+- name: Add microsoft as a trusted package signer
+  become_user: "{{ remote_admin_user }}"
+  become: yes
+  shell: "curl -sL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > /etc/apt/trusted.gpg.d/microsoft.asc.gpg"
+
+- name: copy shell script
+  template:
+    src: "templates/copy_to_blob_store.sh"
+    dest: "/home/{{ remote_user }}"
+    mode: "0640"
+

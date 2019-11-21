@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
 from apps.accounts.models import UserProfile, IndividualIdentifier
 import csv
-import random
+# import random
 
 
 FIRST_NAME = ["Adam", "Ben", "Colin", "Derek", "Edward", "Fred", "George", "Henry", "Ian", "John", "Kevin",
@@ -96,6 +96,8 @@ class Command(BaseCommand):
         parser.add_argument('-p', '--pwdprefix', type=str, help='Define a password prefix in lower case')
         parser.add_argument('-f', '--patientfile', type=str, help='absolute path to patient.csv file')
         parser.add_argument('-o', '--outfile', type=str, help='absolute path for output csv file')
+        parser.add_argument('-m', '--metafile', type=str, help='absolute path for output csv meta file')
+
 
     def read_patient_csv(self, patientfile):
 
@@ -115,6 +117,15 @@ class Command(BaseCommand):
         w.close()
         return
 
+    def write_metadata_csv(self, metafile, metalist):
+
+        with open(metafile, 'w') as m:
+            writer = csv.writer(m)
+            writer.writerows(metalist)
+
+        m.close()
+        return
+
     def get_state_id(self, state_name):
 
         if state_name.lower() in STATES:
@@ -131,6 +142,8 @@ class Command(BaseCommand):
         pwdprefix = kwargs['pwdprefix']
         patientfile = kwargs['patientfile']
         outfile = kwargs['outfile']
+        metafile = kwargs['metafile']
+
 
         if start:
             start_from = start
@@ -164,11 +177,18 @@ class Command(BaseCommand):
             outfile = patientfile
             outfile.replace(".csv", "_out.csv")
 
+        if not metafile:
+            metafile = patientfile
+            metafile.replace(".csv", "_meta.csv")
+
         # writer, written_file = self.write_user_account_csv(outfile)
         outlist = []
+        metalist = []
         line = ["member", "first", "last", "userid", "password"]
         outlist.append(line)
-        # writer.writerow(line)
+
+        metaline = ["memberid", "mpi"]
+        metalist.append(metaline)
 
         ct = 1
 
@@ -180,13 +200,15 @@ class Command(BaseCommand):
             line = ""
             i_padded = "{0:07d}".format(i)
             password = p_p + i_padded + "!"
-            print(u_p + i_padded, password)
+            # print(u_p + i_padded, password)
 
             if len(patient_list) > 0 and ct < len(patient_list):
                 patient_record = patient_list[ct]
                 if len(patient_record) > 0:
                     patient_name = patient_record[10].split(" ")
-                    print(patient_name)
+
+                    print(ct, patient_name, u_p + i_padded)
+
                     got_patient = True
                     if patient_record[9] == "M":
                         sex = "male"
@@ -196,7 +218,10 @@ class Command(BaseCommand):
                     first = patient_name[0]
 
                     last = patient_name[len(patient_name) - 1]
+
                     insurance_id = patient_record[0]
+                    mpi = u_p + patient_record[0]
+
                     sub_division = self.get_state_id(patient_record[6])
 
                     write_record = True
@@ -224,6 +249,9 @@ class Command(BaseCommand):
                 line = [insurance_id, first, last, u_p + i_padded, password]
                 outlist.append(line)
 
+                metaline = [insurance_id, mpi]
+                metalist.append(metaline)
+
                 u = User.objects.create_user(
                     username=u_p + i_padded,
                     first_name=first,
@@ -245,14 +273,14 @@ class Command(BaseCommand):
                 profile.save()
 
 
-                # f_identifier = IndividualIdentifier.objects.create(
-                #     user=u,
-                #     type="PATIENT_ID_FHIR",
-                #     country="US",
-                #     subdivision=sub_division,
-                #     value=i_padded,
-                #     name="%s:%s[PATIENT_ID_FHIR for %s,%s]" % (u_p, i_padded, u.first_name, u.last_name)
-                # )
+                f_identifier = IndividualIdentifier.objects.create(
+                    user=u,
+                    type="MPI",
+                    country="US",
+                    subdivision=sub_division,
+                    value=mpi,
+                    name="%s:%s[MPI for %s,%s]" % (u_p, mpi, u.first_name, u.last_name)
+                )
 
                 p_identifier = IndividualIdentifier.objects.create(
                     user=u,
@@ -266,4 +294,5 @@ class Command(BaseCommand):
             ct += 1
 
         self.write_user_account_csv(outfile, outlist)
+        self.write_metadata_csv(metafile, metalist)
 

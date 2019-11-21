@@ -58,8 +58,6 @@
   debug:
     msg: "{{ venv_setup }}"
 
--
-
 - name: "install gunicorn"
   become_user: "{{ remote_admin_account }}"
   become: yes
