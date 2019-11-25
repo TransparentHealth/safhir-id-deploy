@@ -97,6 +97,8 @@ class Command(BaseCommand):
         parser.add_argument('-f', '--patientfile', type=str, help='absolute path to patient.csv file')
         parser.add_argument('-o', '--outfile', type=str, help='absolute path for output csv file')
         parser.add_argument('-m', '--metafile', type=str, help='absolute path for output csv meta file')
+        parser.add_argument('-i', '--issuer', type=str, help='health plan name')
+
 
 
     def read_patient_csv(self, patientfile):
@@ -143,6 +145,7 @@ class Command(BaseCommand):
         patientfile = kwargs['patientfile']
         outfile = kwargs['outfile']
         metafile = kwargs['metafile']
+        issuer = kwargs['issuer']
 
 
         if start:
@@ -184,10 +187,10 @@ class Command(BaseCommand):
         # writer, written_file = self.write_user_account_csv(outfile)
         outlist = []
         metalist = []
-        line = ["member", "first", "last", "userid", "password"]
+        line = ["member", "subject", "first", "last", "userid", "password"]
         outlist.append(line)
 
-        metaline = ["memberid", "mpi"]
+        metaline = ["memberid", "subject"]
         metalist.append(metaline)
 
         ct = 1
@@ -220,7 +223,7 @@ class Command(BaseCommand):
                     last = patient_name[len(patient_name) - 1]
 
                     insurance_id = patient_record[0]
-                    mpi = u_p + patient_record[0]
+                    # mpi = u_p + patient_record[0]
 
                     sub_division = self.get_state_id(patient_record[6])
 
@@ -246,11 +249,6 @@ class Command(BaseCommand):
             #     sub_division = SUB_DIVISION[random.randrange(50)]
 
             if write_record:
-                line = [insurance_id, first, last, u_p + i_padded, password]
-                outlist.append(line)
-
-                metaline = [insurance_id, mpi]
-                metalist.append(metaline)
 
                 u = User.objects.create_user(
                     username=u_p + i_padded,
@@ -268,6 +266,7 @@ class Command(BaseCommand):
                 # print(u.password)
 
                 profile = UserProfile.objects.create(user=u)
+                profile.nickname = u_p +  i_padded
                 profile.sex = sex
                 profile.birth_date = dob
                 profile.save()
@@ -277,8 +276,9 @@ class Command(BaseCommand):
                     user=u,
                     type="MPI",
                     country="US",
+                    issuer=issuer,
                     subdivision=sub_division,
-                    value=mpi,
+                    value=profile.subject,
                     name="%s:%s[MPI for %s,%s]" % (u_p, mpi, u.first_name, u.last_name)
                 )
 
@@ -290,6 +290,11 @@ class Command(BaseCommand):
                     value=insurance_id,
                     name="%s[INSURANCE_ID for %s,%s]" % (insurance_id, u.first_name, u.last_name)
                 )
+                line = [insurance_id, profile.subject, first, last, u_p + i_padded, password]
+                outlist.append(line)
+
+                metaline = [insurance_id, profile.subject]
+                metalist.append(metaline)
 
             ct += 1
 
