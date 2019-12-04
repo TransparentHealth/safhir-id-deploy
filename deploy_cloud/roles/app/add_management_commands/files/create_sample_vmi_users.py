@@ -84,7 +84,7 @@ STATES = {"alabama": "AL",
           "washington": "WA",
           "west virginia": "WV",
           "wisconsin": "WI",
-          "Wyoming": "WY"}
+          "wyoming": "WY"}
 
 class Command(BaseCommand):
     help = 'Create Sample VMI Users'
@@ -183,6 +183,7 @@ class Command(BaseCommand):
         if not metafile:
             metafile = patientfile
             metafile.replace(".csv", "_meta.csv")
+            print("MetaFile: %s" % metafile)
 
         # writer, written_file = self.write_user_account_csv(outfile)
         outlist = []
@@ -279,7 +280,7 @@ class Command(BaseCommand):
                     issuer=issuer,
                     subdivision=sub_division,
                     value=profile.subject,
-                    name="%s:%s[MPI for %s,%s]" % (u_p, mpi, u.first_name, u.last_name)
+                    name="%s:%s[MPI for %s,%s]" % (u_p, profile.subject, u.first_name, u.last_name)
                 )
 
                 p_identifier = IndividualIdentifier.objects.create(
