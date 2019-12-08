@@ -299,6 +299,6 @@ class Command(BaseCommand):
 
             ct += 1
 
-        self.write_user_account_csv(outfile, outlist)
+
         self.write_metadata_csv(metafile, metalist)
 
