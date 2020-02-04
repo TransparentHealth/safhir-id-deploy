@@ -87,7 +87,7 @@ STATES = {"alabama": "AL",
           "wyoming": "WY"}
 
 class Command(BaseCommand):
-    help = 'Create Sample VMI Users'
+    help = 'Create Sample VMI Users. Sample Syntax: create_sample_vmi_users -s 1001 -u dmnd -p du -f /home/ubuntu/patients.csv  -o /home/ubuntu/patient_list.csv -i "Diamond Health" -m /home/ubuntu/member_meta.csv 1'
 
     def add_arguments(self, parser):
         parser.add_argument('total', type=int, help='Indicates the number of users to be created')
