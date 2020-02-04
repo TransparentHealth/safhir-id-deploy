@@ -168,11 +168,11 @@ class Command(BaseCommand):
             # override total with number of records in csv file
             total = len(patient_list) - 1
             # ['Member id', 'Date of birth', 'Date of death', 'County', 'State',
-            #  'Country', 'Zip code', 'Race code', 'Ethnicity', 'Gender code',
-            #  'Name', 'Relationship to subscriber', 'Subscriber id']
+            #  'Country', 'Race code', 'Ethnicity', 'Gender code',
+            #  'Name', 'Zip code']
             # [0 = 'Member id', 1 = 'Date of birth', 2 = 'Date of death', 3 = 'County', 4 = 'State',
-            #  5 = 'Country', 6 = 'Zip code', 7 = 'Race code', 8 = 'Ethnicity', 9 = 'Gender code',
-            #  10 = 'Name', 11 = 'Relationship to subscriber', 12 = 'Subscriber id']
+            #  5 = 'Country', 6 = 'Race code', 7 = 'Ethnicity', 8 = 'Gender code',
+            #  9 = 'Name', 10 = 'Zip code']
         else:
             patient_list = []
 
@@ -209,12 +209,12 @@ class Command(BaseCommand):
             if len(patient_list) > 0 and ct < len(patient_list):
                 patient_record = patient_list[ct]
                 if len(patient_record) > 0:
-                    patient_name = patient_record[10].split(" ")
+                    patient_name = patient_record[9].split(" ")
 
                     print(ct, patient_name, u_p + i_padded)
 
                     got_patient = True
-                    if patient_record[9] == "M":
+                    if patient_record[8] == "M":
                         sex = "male"
                     else:
                         sex = "female"
