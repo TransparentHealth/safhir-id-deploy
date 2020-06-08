@@ -1,4 +1,4 @@
-# Consumer Directed Exchange (CDEx) / SAFHIR ID
+``# Consumer Directed Exchange (CDEx) / SAFHIR ID
 
 The Alliance for Better Health Consumer Directed Exchange (CDEx) 
 platform is designed to enable consumers to access their health 
@@ -97,7 +97,6 @@ https://www.digitalocean.com/community/tutorials/how-to-use-ansible-to-install-a
 
 
 Install Ansible:
-
 
     sudo apt-get install software-properties-common
     sudo apt-add-repository ppa:ansible/ansible
