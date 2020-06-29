@@ -28,8 +28,9 @@
 
 - name: "create database in postgres for {{ role_type }}_{{ vpc_env }}"
   become_user: "{{ remote_admin_account }}"
+  # become_user: "postgres"
   become: yes
-  # raw: "createdb -h {{ rds_endpoint }} -p {{ env_rds_port }} -U {{ rds_username }} {{ role_type }}_{{ vpc_env }}"
+#  raw: "createdb -h {{ rds_endpoint }} port={{ env_rds_port }} -U {{ rds_username }} {{ role_type }}_{{ vpc_env }}"
   postgresql_db:
     login_host: "{{ rds_endpoint }}"
     login_user: "{{ rds_username_at }}"

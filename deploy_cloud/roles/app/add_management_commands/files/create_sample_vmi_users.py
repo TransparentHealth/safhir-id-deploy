@@ -26,6 +26,34 @@ SUB_DIVISION = ["AL", "AK",	"AZ", "AR", "CA", "CO", "CT", "DC", "DE", "FL", "GA"
                 "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VT", "VA", "WA",
                 "WV", "WI", "WY"]
 
+# Patient File mapping:
+# NEW [0 = 'Member id', 1 = 'Date of birth', 2 = 'Date of death', 3 = 'County', 4 = 'State',
+#  5 = 'Country', 6 = 'Zip code', 15 = 'Race code', 16 = 'Ethnicity', 17 = 'Gender code',
+#  18 = 'Birth sex', 19 = 'Name']
+
+PATIENT_RECORD_MAP = {
+    "member_id": 0,
+    "dob": 1,
+    "dod": 2,
+    "home_county": 3,
+    "home_state": 4,
+    "home_country": 5,
+    "home_zip": 6,
+    "bill_county": 7,
+    "bill_state": 8,
+    "bill_country": 9,
+    "bill_zip": 10,
+    "work_county": 11,
+    "work_state": 12,
+    "work_country": 13,
+    "work_zip": 14,
+    "race_code": 15,
+    "ethnicity": 16,
+    "gender": 17,
+    "birth_sex": 18,
+    "name": 19,
+}
+
 STATES = {"alabama": "AL",
           "alaska": "AK",
           "american samoa": "AS",
@@ -131,7 +159,7 @@ class Command(BaseCommand):
     def get_state_id(self, state_name):
 
         if state_name.lower() in STATES:
-            state = STATES[state_name]
+            state = STATES[state_name.lower()]
         else:
             state = ""
 
@@ -167,11 +195,19 @@ class Command(BaseCommand):
             patient_list = self.read_patient_csv(patientfile)
             # override total with number of records in csv file
             total = len(patient_list) - 1
-            # ['Member id', 'Date of birth', 'Date of death', 'County', 'State',
+            # ['Member id', 'Date of birth', 'Date of death, 'Home_County' , 'Home_State',
+            #   'Home_Country', Home_Zip code,
+            #   Bill_County,Bill_State,Bill_Country,Bill_Zip code,
+            #   Work_County,Work_State,Work_Country,Work_Zip code,
+            #   Race code,Ethnicity,Gender code,Birth sex,Name
+            # OLD ['Member id', 'Date of birth', 'Date of death', 'County', 'State',
             #  'Country', 'Race code', 'Ethnicity', 'Gender code',
             #  'Name', 'Zip code']
-            # [0 = 'Member id', 1 = 'Date of birth', 2 = 'Date of death', 3 = 'County', 4 = 'State',
-            #  5 = 'Country', 6 = 'Race code', 7 = 'Ethnicity', 8 = 'Gender code',
+            # NEW [0 = 'Member id', 1 = 'Date of birth', 2 = 'Date of death', 3 = 'County', 4 = 'State',
+            #  5 = 'Country', 6 = 'Zip code', 15 = 'Race code', 16 = 'Ethnicity', 17 = 'Gender code',
+            #  18 = 'Birth sex', 19 = 'Name']
+
+            #  6 = 'Race code', 7 = 'Ethnicity', 8 = 'Gender code',
             #  9 = 'Name', 10 = 'Zip code']
         else:
             patient_list = []
@@ -209,24 +245,25 @@ class Command(BaseCommand):
             if len(patient_list) > 0 and ct < len(patient_list):
                 patient_record = patient_list[ct]
                 if len(patient_record) > 0:
-                    patient_name = patient_record[9].split(" ")
+                    # Change field
+                    patient_name = patient_record[PATIENT_RECORD_MAP['name']].split(" ")
 
                     print(ct, patient_name, u_p + i_padded)
 
                     got_patient = True
-                    if patient_record[8] == "M":
+                    if patient_record[PATIENT_RECORD_MAP['gender']] == "M":
                         sex = "male"
                     else:
                         sex = "female"
-                    dob = patient_record[1]
+                    dob = patient_record[PATIENT_RECORD_MAP['dob']]
                     first = patient_name[0]
 
                     last = patient_name[len(patient_name) - 1]
 
-                    insurance_id = patient_record[0]
-                    # mpi = u_p + patient_record[0]
+                    insurance_id = patient_record[PATIENT_RECORD_MAP['member_id']]
+                    # mpi = u_p + patient_record[PATIENT_RECORD_MAP['member_id']]
 
-                    sub_division = self.get_state_id(patient_record[6])
+                    sub_division = self.get_state_id(patient_record[PATIENT_RECORD_MAP['home_state']])
 
                     write_record = True
                 else:
@@ -302,4 +339,3 @@ class Command(BaseCommand):
 
         self.write_user_account_csv(outfile, outlist)
         self.write_metadata_csv(metafile, metalist)
-

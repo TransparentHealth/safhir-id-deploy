@@ -142,7 +142,8 @@
     name: "{{ item }}"
     virtualenv: "{{ base_app_directory }}/{{ role_type }}/{{ virtual_env_dir }}"
   with_items:
-    - django-storages[azure]
+    # - django-storages[azure]
+    - django-storages[azure-storage-blob]
   when: cloud_provider == "azure"
 
 - name: "install boto3 for collectstatic"
