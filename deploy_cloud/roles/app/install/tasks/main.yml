@@ -30,7 +30,7 @@
   become_user: "{{ remote_admin_account }}"
   become: yes
   git:
-    repo: "https://github.com/TransparentHealth/{{ system_repository_name[role_type] }}.git"
+    repo: "{{ git_repo_source }}{{ system_repository_name[role_type] }}.git"
     dest: "{{ base_app_directory }}/{{ role_type }}"
     force: yes
     clone: yes

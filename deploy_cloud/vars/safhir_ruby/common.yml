@@ -48,7 +48,7 @@ system_descriptive_name:
   smh_app: "SAFHIR: Health Apps"
 
 system_repository_name:
-  vmi: "vmi"
+  vmi: "safhir_vmi"
   smh: "sharemyhealth"
   smh_app: "smh_app"
 
@@ -109,6 +109,7 @@ app_group: "www-data"
 python_ver: "3.6"
 python_bin_dir: "/usr/bin"
 
+git_repo_source: "https://github.com/OnyxHealth/"
 git_branch: "{{ env_git_branch }}"
 
 ###########################################

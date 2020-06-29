@@ -1,6 +1,6 @@
 ---
 # var/{{ cloud_client }}/common.yml
-# cloud_client = "safhir"
+# cloud_client = "safhir_cf_demo"
 # Store variables that are common across all environments
 
 
@@ -13,7 +13,8 @@ cloud_provider: "azure"
 ###########################################
 # CUSTOMER Settings
 ###########################################
-cloud_client: "safhir"
+cloud_client: "safhir_cfdemo"
+# What resource group?
 azure_resource_group: "Dev-NW-SAFHIR"
 
 ###########################################
@@ -31,7 +32,7 @@ django_secret_key: "{{ env_django_secret_key }}"
 django_organization_title: "{{ env_django_organization_title }}"
 django_organization_uri: "{{ env_django_organization_uri }}"
 
-django_org_signup_contact: "https://newwave.io/safhir/"
+django_org_signup_contact: "https://onyxhealth.io/safhir/"
 
 use_parameter_store: "{{ env_use_parameter_store }}"
 # use_parameter_store: "FALSE"
@@ -43,9 +44,9 @@ ec2paramstore_4_env_vars: "{{ env_ec2paramstore_4_env_vars }}"
 django_cloud_provider: "{{ cloud_provider }}"
 
 system_descriptive_name:
-  vmi: "Verify My Identity"
-  smh: "SAFHIR: Share My Health"
-  smh_app: "SAFHIR: Health Apps"
+  vmi: "CareFirst Demo Identity Service"
+  smh: "SAFHIR: CF Demo"
+  smh_app: "SAFHIR: CF Demo App"
 
 system_repository_name:
   vmi: "safhir-vmi"
@@ -73,7 +74,9 @@ python_version: "{{ env_python_version }}"
 http_mode: "{{ env_http_mode }}"
 
 # base_instance_elastic_ip: "3.227.187.144"
-base_instance_elastic_ip: "34.229.8.6"
+# base_instance_elastic_ip: "34.229.8.6"
+# base_instance_elastic_ip: "52.152.225.117"
+base_instance_elastic_ip: "168.62.172.248"
 
 aws_access_key: "{{ env_aws_access_key }}"
 aws_secret_key: "{{ env_aws_secret_key }}"
@@ -108,7 +111,7 @@ app_group: "www-data"
 python_ver: "3.6"
 python_bin_dir: "/usr/bin"
 
-git_repo_source: "https://github.com/OnyxHealth/"
+git_repo_source: "https://github.com/TransparentHealth/"
 git_branch: "{{ env_git_branch }}"
 
 ###########################################
@@ -120,8 +123,8 @@ allowed_ips: "{{ env_allowed_ips }}"
 
 # NGINX Names
 common_ext_nginx_server_names:
-  dev: {"vmi": "id-{{ vpc_env }}.safhir.io vmi-{{ vpc_env }}.safhit.io {{ vpc_env }}.safhir.io", "smh": "smh-{{ vpc_env }}.safhir.io sharemyhealth-{{ vpc_env }}.safhir.io {{ vpc_env }}.safhir.io", "smh_app": "smh_app-{{ vpc_env }}.safhir.io app-{{ vpc_env }}.safhir.io {{ vpc_env }}.safhir.io" }
-  staging: {"vmi": "id-{{ vpc_env }}.safhir.io vmi-{{ vpc_env }}.safhit.io {{ vpc_env }}.safhir.io", "smh": "smh-{{ vpc_env }}.safhir.io sharemyhealth-{{ vpc_env }}.safhir.io {{ vpc_env }}.safhir.io", "smh_app": "smh_app-{{ vpc_env }}.safhir.io app-{{ vpc_env }}.safhir.io {{ vpc_env }}.safhir.io" }
+  dev: {"vmi": "id-cfd-{{ vpc_env }}.safhir.io cfd-vmi-{{ vpc_env }}.safhir.io {{ vpc_env }}.safhir.io", "smh": "smh-{{ vpc_env }}.safhir.io sharemyhealth-{{ vpc_env }}.safhir.io {{ vpc_env }}.safhir.io", "smh_app": "smh_app-{{ vpc_env }}.safhir.io app-{{ vpc_env }}.safhir.io {{ vpc_env }}.safhir.io" }
+  staging: {"vmi": "id-{{ vpc_env }}.safhir.io vmi-{{ vpc_env }}.safhir.io {{ vpc_env }}.safhir.io", "smh": "smh-{{ vpc_env }}.safhir.io sharemyhealth-{{ vpc_env }}.safhir.io {{ vpc_env }}.safhir.io", "smh_app": "smh_app-{{ vpc_env }}.safhir.io app-{{ vpc_env }}.safhir.io {{ vpc_env }}.safhir.io" }
   prod: {"vmi": "id.safhir.io vmi.safhir.io", "smh": "smh.safhir.io sharemyhealth.safhir.io safhir.io", "smh_app": "smh_app.safhir.io app.safhir.io safhir.io" }
 
 ext_nginx_server_names: "{{ common_ext_nginx_server_names[vpc_env] }}"
