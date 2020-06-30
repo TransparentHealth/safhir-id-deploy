@@ -1,0 +1,37 @@
+---
+# roles/sqlite_setup/tasks/main.yml
+# Created: 2020-06-29
+# safhir-id-deploy
+# Purpose: setup sqlite database file
+#
+#    
+#    
+
+# {{ base_app_directory }}/{{ role_type }}/db/db.sqlite3
+
+- name: "install {{ database_type }} package"
+  become_user: "{{ remote_admin_account }}"
+  become: yes
+  apt:
+    pkg:
+      - sqlite
+
+- name: "Create {{ database_type }} directory."
+  file:
+    path: "{{ base_app_directory }}/{{ role_type }}/db"
+    owner: "{{ remote_user_account }}"
+    group: "{{ remote_user_account }}"
+    mode: 0755
+    state: directory
+
+- name: "Create sqlite db file {{ base_app_directory}}/{{ role_type }}/db/{{ sqlite_file }}"
+  file:
+    name: "{{ base_app_directory }}/{{ role_type }}/db/{{ item }}"
+    owner: "{{ remote_user_account }}"
+    group: "{{ remote_user_account }}"
+    mode: 0644
+    state: file
+  with_items: "{{ sqlite_file }}"
+
+- name: "Change ownership on {{ base_app_directory }}/db"
+  shell: "sudo chown -Rf {{ remote_user_account }}:{{ remote_user_account }} {{ base_app_directory }}/{{ role_type }}/db "

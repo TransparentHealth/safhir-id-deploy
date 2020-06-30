@@ -111,7 +111,7 @@ app_group: "www-data"
 python_ver: "3.6"
 python_bin_dir: "/usr/bin"
 
-git_repo_source: "https://github.com/TransparentHealth/"
+git_repo_source: "https://github.com/OnyxHealth/"
 git_branch: "{{ env_git_branch }}"
 
 ###########################################
@@ -142,6 +142,10 @@ teams_webhook: "{{ env_teams_webhook }}"
 # AWS Settings
 ###########################################
 
+# Database_Type: default = postgres
+database_type: "sqlite"
+
+
 #RDS DB_NAME
 rds_db_name: "{{ env_rds_db_name }}"
 
@@ -153,6 +157,10 @@ db_master_pw: "{{ env_db_master_pw }}"
 
 rds_endpoint: "{{ env_rds_endpoint }}"
 rds_port: "{{ env_rds_port }}"
+
+sqlite_file: "db.sqlite3"
+db_custom_url: 'sqlite://{{ base_app_directory }}/{{ role_type }}/db/{{ sqlite_file }}'
+
 
 vpc_app_subnet_id: "{{ env_vpc_app_subnet_id }}"
 

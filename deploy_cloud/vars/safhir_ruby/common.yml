@@ -140,6 +140,9 @@ teams_webhook: "{{ env_teams_webhook }}"
 # AWS Settings
 ###########################################
 
+# Database_Type: default = postgres
+database_type: "postgres"
+
 #RDS DB_NAME
 rds_db_name: "{{ env_rds_db_name }}"
 
@@ -151,6 +154,8 @@ db_master_pw: "{{ env_db_master_pw }}"
 
 rds_endpoint: "{{ env_rds_endpoint }}"
 rds_port: "{{ env_rds_port }}"
+
+db_custom_url: 'postgres://{{ rds_username }}:{{ db_master_pw }}@{{ rds_endpoint }}:{{ env_rds_port }}/{{ role_type }}_{{ vpc_env }}'
 
 vpc_app_subnet_id: "{{ env_vpc_app_subnet_id }}"
 
