@@ -30,7 +30,9 @@
     owner: "{{ remote_user_account }}"
     group: "{{ remote_user_account }}"
     mode: 0644
-    state: file
+    state: touch
+    modification_time: preserve
+    access_time: preserve
   with_items: "{{ sqlite_file }}"
 
 - name: "Change ownership on {{ base_app_directory }}/db"

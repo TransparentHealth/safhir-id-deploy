@@ -49,7 +49,7 @@ system_descriptive_name:
   smh_app: "SAFHIR: CF Demo App"
 
 system_repository_name:
-  vmi: "safhir-vmi"
+  vmi: "vmi"
   smh: "sharemyhealth"
   smh_app: "smh_app"
 
@@ -112,6 +112,11 @@ python_ver: "3.6"
 python_bin_dir: "/usr/bin"
 
 git_repo_source: "https://github.com/OnyxHealth/"
+git_repo_name:
+  vmi: "safhir-vmi"
+  smh: "sharemyhealth"
+  smh_app: "smh_app"
+
 git_branch: "{{ env_git_branch }}"
 
 ###########################################
@@ -159,7 +164,7 @@ rds_endpoint: "{{ env_rds_endpoint }}"
 rds_port: "{{ env_rds_port }}"
 
 sqlite_file: "db.sqlite3"
-db_custom_url: 'sqlite://{{ base_app_directory }}/{{ role_type }}/db/{{ sqlite_file }}'
+db_custom_url: 'sqlite:///{{ base_app_directory }}/{{ role_type }}/db/{{ sqlite_file }}'
 
 
 vpc_app_subnet_id: "{{ env_vpc_app_subnet_id }}"

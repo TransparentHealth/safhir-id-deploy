@@ -26,11 +26,11 @@
     state: absent
 
 # https://github.com/TransparentHealth/sharemyhealth.git
-- name: "Get the {{ system_repository_name[role_type] }} app from github  BRANCH:{{ git_branch[role_type] }}"
+- name: "Get the {{ git_repo_name[role_type] }} app from github  BRANCH:{{ git_branch[role_type] }}"
   become_user: "{{ remote_admin_account }}"
   become: yes
   git:
-    repo: "{{ git_repo_source }}{{ system_repository_name[role_type] }}.git"
+    repo: "{{ git_repo_source }}{{ git_repo_name[role_type] }}.git"
     dest: "{{ base_app_directory }}/{{ role_type }}"
     force: yes
     clone: yes
@@ -107,13 +107,18 @@
 #    mode: 0755
 
 - name: "install requirements in virtualenv {{ base_app_directory }}/{{ role_type }}/{{ virtual_env_dir }}"
-  # become_user: "{{ remote_admin_account }}"
-  # become: yes
+  become_user: "{{ remote_admin_account }}"
+  become: yes
   # shell: "cd {{ base_app_directory }}/{{ role_type }} && source {{ virtual_env_dir }}/bin/activate && pip install -r requirements.txt"
   pip:
     chdir: "{{ base_app_directory }}/{{ role_type}}"
     requirements: "requirements.txt"
     virtualenv: "{{ base_app_directory }}/{{ role_type }}/{{ virtual_env_dir }}"
+
+- name: Set ownership of virtualenv directories
+  become_user: "{{ remote_admin_account }}"
+  become: yes
+  shell: "cd {{ base_app_directory }}/{{ role_type }} && chown -Rf {{ remote_user_account }}:{{ remote_user_account }} ./env "
 
 #  shell: |
 #    source {{ base_app_directory }}/{{ role_type}}/{{ virtual_env_dir }}/bin/activate && make reqs-install
@@ -125,25 +130,16 @@
   become: yes
   pip:
     state: present
-    name: "{{ item }}"
+    name: ["django-extensions", "Werkzeug", "pyOpenSSL", "gevent", "eventlet"]
     virtualenv: "{{ base_app_directory }}/{{ role_type }}/{{ virtual_env_dir }}"
-  with_items:
-    - django-extensions
-    - Werkzeug
-    - pyOpenSSL
-    - gevent
-    - eventlet
 
 - name: "install django azure storage"
   become_user: "{{ remote_admin_account }}"
   become: yes
   pip:
     state: present
-    name: "{{ item }}"
+    name: ["django-storages[azure-storage-blob]",]
     virtualenv: "{{ base_app_directory }}/{{ role_type }}/{{ virtual_env_dir }}"
-  with_items:
-    # - django-storages[azure]
-    - django-storages[azure-storage-blob]
   when: cloud_provider == "azure"
 
 - name: "install boto3 for collectstatic"
@@ -200,9 +196,9 @@
     dest: "{{ base_app_directory}}/{{ role_type }}/.env"
     mode: "0640"
 
-## testing fix to set .env variables when virtualenv is called by ansible django_manage
-#- name: "Append .env to virtualenv activate script"
-#  shell: "cat .env >> env/bin/activate"
-#  args:
-#    chdir: "{{ base_app_directory}}/{{ role_type }}"
+# testing fix to set .env variables when virtualenv is called by ansible django_manage
+- name: "Append .env to virtualenv activate script"
+  shell: "cat .env >> env/bin/activate"
+  args:
+    chdir: "{{ base_app_directory}}/{{ role_type }}"
 

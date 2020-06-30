@@ -65,10 +65,8 @@
   become: yes
   become_user: "{{ remote_admin_account }}"
   apt:
-    name: "{{ item }}"
+    name: ["uwsgi"]
     state: present
-  with_items:
-    - uwsgi
 
 - name: "copy nginx.conf to the target"
   become_user: "{{ remote_admin_account }}"
@@ -193,7 +191,7 @@
     owner: "{{ remote_admin_account }}"
     group: "{{ remote_admin_account }}"
 
-- name: "configure supervisor/conf.d/ {{ system_repository_name[role_type] }}.conf"
+- name: "configure supervisor/conf.d/{{ system_repository_name[role_type] }}.conf"
   become_user: "{{ remote_admin_account }}"
   become: yes
   template:
@@ -203,6 +201,13 @@
     owner: "{{ remote_admin_account }}"
     group: "{{ remote_admin_account }}"
 
+- name: "Start supervisor"
+  become_user: "{{ remote_admin_account }}"
+  become: yes
+  service:
+    name: supervisor
+    state: started
+    enabled: yes
 
 - name: "reload supervisor"
   become_user: "{{ remote_admin_account }}"
